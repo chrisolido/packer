@@ -1,0 +1,13 @@
+- hosts: all
+  sudo: yes
+  tasks:
+    - name: Installing httpd
+      yum: name=httpd update_cache=yes
+    - name: Starting httpd on boot
+      service: name=httpd enabled=yes state=started
+    - name: Copy from /tmp to /etc/httpd/conf.d/reverse_proxy
+      copy: src=/tmp/reverse_proxy.conf dest=/etc/httpd/conf.d/ owner=apache group=apache mode="u+rw,g-wx,o-rwx"
+    - name: Make sure a service is running
+      systemd: state=started name=httpd
+    - name: Unzip ssl.zip
+      unarchive: src=/tmp/ssl.zip dest=/etc/httpd/conf.d/  

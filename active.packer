@@ -1,0 +1,44 @@
+{
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "ap-southeast-1",
+      "source_ami": "ami-2891384b",
+      "instance_type": "t2.xlarge",
+      "ssh_pty": "true",
+      "ssh_username": "centos",
+      "ami_name": "packer-activeai {{timestamp}}",
+      "ami_description": "Amazing AMI designed by Chris Olido",
+      "tags": {
+              "role": "WebServer"
+    },
+      "run_tags": {
+              "role": "buildSystem"
+      }
+    }
+  ],
+  "provisioners": [
+          {
+                  "type": "shell",
+                  "script": "ansible.sh"
+    },
+          {
+                  "type": "file",
+                  "source": "ssl.zip",
+                  "destination": "/tmp/ssl.zip"
+    },
+          {
+                  "type": "file",
+                  "source": "reverse_proxy.conf",
+                  "destination": "/tmp/reverse_proxy.conf"                  
+    },
+          {
+                  "type": "ansible-local",
+                  "playbook_file": "./httpd.yaml"
+    },
+          {
+                  "type": "shell",
+                  "script": "tomcat.sh"
+    }
+  ]
+}
